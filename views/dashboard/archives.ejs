@@ -1,0 +1,68 @@
+<% extend('../layouts/dashboard-layout.ejs')%>
+
+<div class="articles">
+  <div class="btn-group w-100">
+    <a
+      href="/dashboard/archives?status=public"
+      class="btn btn-outline-info w-100 rounded-0 <% if(status==='public'){ %>active<% } %>"
+      >已發佈</a
+    >
+    <a
+      href="/dashboard/archives?status=draft"
+      class="btn btn-outline-info w-100 rounded-0 <% if(status==='draft'){ %>active<% } %>"
+      >草稿</a
+    >
+    <a href="/dashboard/article/create" class="btn btn-secondary">發佈文章</a>
+  </div>
+  <% for(let item in articles){ %>
+  <div class="card my-3">
+    <h4 class="card-header"><%= articles[item].title %></h4>
+    <div class="card-body">
+      <%- striptags(articles[item].content.slice(0,150)) %>...
+      <div class="mt-2">
+        <span class="fa fa-clock-o"></span>
+        <%- moment(articles[item].update_time*1000).format("YYYY/MM/DD") %>
+        <span class="fa fa-tag ml-2"></span>
+        <% for(let categoriesItem in categories){ %> <%
+        if(articles[item].category===categories[categoriesItem].id) {%>
+        <span> <%- categories[categoriesItem].name %> </span>
+        <% } %> <% } %>
+      </div>
+    </div>
+    <div class="card-footer p-0 btn-group">
+      <a
+        href="#"
+        class="btn btn-outline-danger deletePost rounded-0 w-50"
+        data-id="<%- articles[item].id %>"
+        data-title="<%- articles[item].title %>"
+        >刪除</a
+      >
+      <a
+        href="/dashboard/article/<%- articles[item].id %>"
+        class="btn btn-outline-dark w-50 rounded-0"
+        >編輯</a
+      >
+    </div>
+  </div>
+  <% } %>
+</div>
+
+<%- include('../partials/pagination.ejs') %>
+
+<script>
+  $(document).ready(function () {
+    $(".deletePost").on("click", function (e) {
+      e.preventDefault();
+      var id = $(this).data("id");
+      var title = $(this).data("title");
+      if (confirm("確認是否刪除" + title)) {
+        $.ajax({
+          url: "/dashboard/article/delete/" + id,
+          method: "POST",
+        }).done(function (response) {
+          window.location = "/dashboard/archives";
+        });
+      }
+    });
+  });
+</script>

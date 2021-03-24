@@ -1,0 +1,97 @@
+<% extend('../layouts/dashboard-layout.ejs')%>
+<% if(category===undefined){ var
+  category={} } %>
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <h3><%= title%></h3>
+    <% if(hasInfo){ %> <% for(item in messages) {%>
+    <div class="alert alert-warning"><%- messages[item] %></div>
+    <% } %> <% } %>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>名稱</th>
+          <th>路徑</th>
+          <th width="30">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for(let item in categories){ %>
+        <tr>
+          <td class="align-middle"><%= categories[item].name %></td>
+          <td class="align-middle"><%= categories[item].path %></td>
+          <td class="align-middle">
+            <form
+              action="/dashboard/categories/delete/<%= categories[item].id %>"
+              method="POST"
+            >
+              <button type="submit" class="btn btn-outline-danger btn-sm">
+                刪除
+              </button>
+            </form>
+          </td>
+          <td class="align-middle">
+            <a
+              href="#"
+              type="submit"
+              class="btn btn-outline-secondary btn-sm categoryEdit"
+              data-id="<%- categories[item].id %>"
+            >
+              編輯
+            </a>
+          </td>
+        </tr>
+        <% } %>
+      </tbody>
+    </table>
+    <form action="/dashboard/categories/create" method="POST">
+      <table class="table">
+        <tr>
+          <td class="align-middle">新增</td>
+          <td>
+            <label for="name">分類名稱</label>
+            <input
+              type="text"
+              class="form-control"
+              id="name"
+              name="name"
+              placeholder="請輸入分類名稱"
+              value="<%- category.name || ''  %>"
+            />
+          </td>
+          <td colspan="2">
+            <label for="path">路徑</label>
+            <input
+              type="text"
+              class="form-control"
+              id="path"
+              name="path"
+              placeholder="請輸入分類路徑"
+              value="<%- category.path || ''  %>"
+            />
+          </td>
+        </tr>
+      </table>
+      <div class="text-right">
+        <button type="submit" class="btn btn-primary">更新資訊</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+$(document).ready(function () {
+    $(".categoryEdit").on("click", function (e) {
+      e.preventDefault();
+      var id = $(this).data("id");
+        $.ajax({
+          url: "/dashboard/categories/" + id,
+          method: "POST",
+        }).done(function (response) {
+          
+        });;
+    });
+  });
+
+</script>

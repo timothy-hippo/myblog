@@ -1,0 +1,33 @@
+<nav class="my-5" aria-label="Page navigation example">
+  <ul class="pagination justify-content-center">
+    <li class="page-item <% if(!pagination.hasPre){ %> disabled <% } %>">      
+      <% if(url=='index'){ %>
+        <a class="page-link" href="/?page=<%- pagination.currencyPage-1 %>" tabindex="-1"><</a>
+      <% } else if(url=='archives'){ %>        
+        <a class="page-link" href="/dashboard/archives?status=<%- status %>&page=<%- pagination.currencyPage-1 %>" tabindex="-1"><</a>
+        <% } else if(url=='category'){ %>        
+          <a class="page-link" href="/<%- categoriePath %>?page=<%- pagination.currencyPage-1 %>" tabindex="-1"><</a>
+      <% } %>
+    </li>
+    <% for(var i=1;i<pagination.totalPage+1;i++){ %>
+      <li class="page-item <% if(i==pagination.currencyPage){ %> active <% } %>">   
+        <% if(url=='index'){ %>
+          <a class="page-link" href="/?page=<%- i %>" tabindex="-1"><%- i %></a>
+        <% } else if(url=='archives'){ %>        
+          <a class="page-link" href="/dashboard/archives?status=<%- status %>&page=<%- i %>" tabindex="-1"><%- i %></a>
+          <% } else if(url=='category'){ %>        
+            <a class="page-link" href="/<%- categoriePath %>?page=<%- i %>" tabindex="-1"><%- i %></a>
+        <% } %>
+      </li>        
+    <% } %>
+    <li class="page-item <% if(!pagination.hasNext){ %> disabled <% } %>">
+      <% if(url=='index'){ %>
+        <a class="page-link" href="/?page=<%- pagination.currencyPage+1 %>" tabindex="-1">></a>
+      <% } else if(url=='archives'){ %>        
+        <a class="page-link" href="/dashboard/archives?status=<%- status %>&page=<%- pagination.currencyPage+1 %>" tabindex="-1">></a>
+        <% } else if(url=='category'){ %>        
+          <a class="page-link" href="/<%- categoriePath %>?page=<%- pagination.currencyPage+1 %>" tabindex="-1">></a>
+      <% } %>
+    </li>
+  </ul>
+</nav>
