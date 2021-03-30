@@ -16,12 +16,27 @@ article={} } %>
       value="<%= article.title  || '' %>"
     />
     <hr />
-    <textarea name="content" id="editor" class="form-control">
+    <textarea
+      name="content"
+      id="editor"
+      class="form-control"
+      style="height: 300px"
+    >
  
       <%- article.content  || '' %>
     </textarea>
+    <script src="/javascripts/build/ckeditor.js"></script>
     <script>
-      CKEDITOR.replace("content");
+      // CKEDITOR.replace("content");
+      ClassicEditor.create(document.querySelector("#editor"), {
+        
+      })
+        .then((editor) => {
+          console.log(editor);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     </script>
   </div>
   <div class="col-md-3">

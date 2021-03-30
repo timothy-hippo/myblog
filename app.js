@@ -19,6 +19,7 @@ app.set("views", path.join(__dirname, "views"));
 app.engine("ejs", require("express-ejs-extend"));
 app.set("view engine", "ejs");
 
+
 //加入body解析
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -56,8 +57,8 @@ const authCheck = function (req, res, next) {
 };
 
 app.use("/auth", authRouter);
-app.use("/", authCheck, indexRouter);
-app.use("/dashboard", authCheck, dashboardRouter);
+app.use("/",  indexRouter);
+app.use("/dashboard", dashboardRouter);
 
 //catch 404 and forward to error handler
 app.use(function (req, res, next) {

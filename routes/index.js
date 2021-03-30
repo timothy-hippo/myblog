@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 var firebaseAdminDb = require("../connections/firebase_admin");
 var convertPagination = require("../modules/convertPagination"); //載入分頁模組
+var firebaseStorage = require("../modules/firebase_storage"); //載入分頁模組
 var moment = require("moment");
 var striptags = require("striptags");
 
@@ -9,12 +10,14 @@ const categoriesRef = firebaseAdminDb.ref("/categories/");
 const articlesRef = firebaseAdminDb.ref("/articles/");
 //const userRef = firebaseAdminDb.ref("/user/");
 
+console.log(firebaseStorage)
+
 //前台預覽文章
 router.get("/", function (req, res, next) {
   let currencyPage = req.query.page;
   let categories = {};
-  let url='index';
-  let articlesTotal=0;
+  let url = "index";
+  let articlesTotal = 0;
   categoriesRef
     .once("value")
     .then(function (snapshot) {
@@ -29,7 +32,7 @@ router.get("/", function (req, res, next) {
         }
       });
       articles.reverse();
-      articlesTotal=articles.length;
+      articlesTotal = articles.length;
       const data = convertPagination(articles, currencyPage); //取得分頁模組資料
       res.render("index", {
         articles: data.data,
@@ -49,8 +52,8 @@ router.get("/:categoriePath", function (req, res, next) {
   let currencyPage = req.query.page;
   let categories = {};
   let categoryId = "";
-  let url='category';
-  let articlesTotal=0;
+  let url = "category";
+  let articlesTotal = 0;
   categoriesRef
     .once("value")
     .then(function (snapshot) {
@@ -59,10 +62,10 @@ router.get("/:categoriePath", function (req, res, next) {
         if (categoriesChild.val().path == categoriePath) {
           categoryId = categoriesChild.val().id;
         }
-      }); 
-      if(categoryId==""){
-        res.render('error',{title:'找不到頁面'})
-      }     
+      });
+      if (categoryId == "") {
+        res.render("error", { title: "找不到頁面" });
+      }
       return articlesRef.orderByChild("update_time").once("value");
     })
     .then(function (snapshot) {
@@ -76,7 +79,7 @@ router.get("/:categoriePath", function (req, res, next) {
         }
       });
       articles.reverse();
-      articlesTotal=articles.length;
+      articlesTotal = articles.length;
       const data = convertPagination(articles, currencyPage); //取得分頁模組資料
       res.render("index", {
         articles: data.data,

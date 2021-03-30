@@ -7,8 +7,9 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <title>蜂蜜牛奶茶葉蛋</title>
-    <link rel="stylesheet" href="/css/all.css" type="text/css"/>
-    <link rel="icon" href="/images/logo.ico">
+    <link rel="stylesheet" href="/css/all.css" type="text/css" />
+    <link rel="icon" href="/images/logo.ico" />
+    <link rel="apple-touch-icon" href="/images/logo.png" />
     <link
       rel="stylesheet"
       href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
@@ -20,8 +21,14 @@
       integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
-
+    <link
+      rel="stylesheet"
+      href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+      integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p"
+      crossorigin="anonymous"
+    />
+    <!--prism.css-->
+    <link rel="stylesheet" href="/css/prism.css" />
     <style>
       /* typography design */
       .text-primary {
@@ -55,9 +62,7 @@
             <a class="header-link mr-3" href="/dashboard/article/create"
               >發布文章
             </a>
-            <a class="header-link mr-3" href="/dashboard/archives"
-              >後臺管理
-            </a>
+            <a class="header-link mr-3" href="/dashboard/archives">後臺管理 </a>
             <a class="header-link" href="/auth/logout">登出 </a>
           </div>
         </div>
@@ -73,13 +78,17 @@
             <a href="/css"><i class="fas fa-palette mr-2"></i>CSS</a>
           </li>
           <li>
-            <a href="/bootstrap"><i class="fas fa-paint-roller mr-2"></i>Bootstrap</a>
+            <a href="/bootstrap"
+              ><i class="fas fa-paint-roller mr-2"></i>Bootstrap</a
+            >
           </li>
           <li>
             <a href="/rwd"><i class="fas fa-columns mr-2"></i>RWD</a>
           </li>
           <li>
-            <a href="/javascript"><i class="fas fa-laptop-code mr-2"></i>JavaScript</a>
+            <a href="/javascript"
+              ><i class="fas fa-laptop-code mr-2"></i>JavaScript</a
+            >
           </li>
           <li>
             <a href="/jquery"><i class="fas fa-keyboard mr-2"></i>jQuery</a>
@@ -104,7 +113,6 @@
       <div class="main"><%- content %></div>
     </div>
 
-    
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
@@ -115,6 +123,7 @@
       src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
       integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
       crossorigin="anonymous"
-    ></script>
+    ></script>    
+    <script src="/javascripts/prism/prism.js"></script>
   </body>
 </html>
