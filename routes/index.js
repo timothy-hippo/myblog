@@ -2,7 +2,6 @@ var express = require("express");
 var router = express.Router();
 var firebaseAdminDb = require("../connections/firebase_admin");
 var convertPagination = require("../modules/convertPagination"); //載入分頁模組
-var firebaseStorage = require("../modules/firebase_storage"); //載入分頁模組
 var moment = require("moment");
 var striptags = require("striptags");
 
@@ -10,7 +9,6 @@ const categoriesRef = firebaseAdminDb.ref("/categories/");
 const articlesRef = firebaseAdminDb.ref("/articles/");
 //const userRef = firebaseAdminDb.ref("/user/");
 
-console.log(firebaseStorage)
 
 //前台預覽文章
 router.get("/", function (req, res, next) {
