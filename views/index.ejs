@@ -1,6 +1,11 @@
 <% extend('./layouts/layout.ejs')%>
 
 <div class="articles">
+  <form method="POST" action="/uploadimg" enctype="multipart/form-data">
+    <input type="file" name="photo" value="上傳照片" />
+    <input type="submit" value="提交" />
+  </form>
+  
   <select class="form-control mb-2 categorycheck" id="categorycheck">
     <option value="0" selected disabled>文章類別</option>
     <option value="">總類別</option>

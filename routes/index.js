@@ -2,13 +2,40 @@ var express = require("express");
 var router = express.Router();
 var firebaseAdminDb = require("../connections/firebase_admin");
 var convertPagination = require("../modules/convertPagination"); //載入分頁模組
+//var firebaseStorage=require("../connections/firebase_storage") //1 載入firebase storage模組 
 var moment = require("moment");
 var striptags = require("striptags");
+var fs = require("fs");
+
+//上傳圖片
+var multer = require("multer");
+var upload = multer({
+  dest: "public/upload",
+  fileFilter(req, file, cb) {
+    // 只接受三種圖片格式
+    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+      cb(new Error("Please upload an image"));
+    }
+    cb(null, true);
+  },
+});
 
 const categoriesRef = firebaseAdminDb.ref("/categories/");
 const articlesRef = firebaseAdminDb.ref("/articles/");
 //const userRef = firebaseAdminDb.ref("/user/");
 
+//上傳照片
+router.post("/uploadimg", upload.single("photo"), function (req, res, next) {
+  var file = req.file;
+  //const blob = firebaseStorage.file(file.originalname);
+  //console.log(blob)
+  let newPath = `public/upload/${file.originalname}`;
+  fs.rename(file.path, newPath, () => {
+    console.log(file.path);
+    console.log(newPath);
+    res.redirect(`/upload/${file.originalname}`);
+  });
+});
 
 //前台預覽文章
 router.get("/", function (req, res, next) {
