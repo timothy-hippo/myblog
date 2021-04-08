@@ -57,8 +57,8 @@ const authCheck = function (req, res, next) {
 };
 
 app.use("/auth", authRouter);
-app.use("/",  indexRouter);
-app.use("/dashboard", dashboardRouter);
+app.use("/",authCheck,  indexRouter);
+app.use("/dashboard",authCheck, dashboardRouter);
 
 //catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -45,7 +45,7 @@ router.post("/login", function (req, res) {
   fireAuth
     .signInWithEmailAndPassword(email, password)
     .then(function (user) {
-      console.log(user.user.uid);
+      //console.log(user.user.uid);
       req.session.uid = user.user.uid;
      // console.log(req.session.uid);
       res.redirect("/");

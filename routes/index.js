@@ -2,23 +2,50 @@ var express = require("express");
 var router = express.Router();
 var firebaseAdminDb = require("../connections/firebase_admin");
 var convertPagination = require("../modules/convertPagination"); //載入分頁模組
-//var firebaseStorage=require("../connections/firebase_storage") //1 載入firebase storage模組 
+require("dotenv").config();
+
+const { Storage } = require("@google-cloud/storage"); //載入google-cloud服務
+
 var moment = require("moment");
 var striptags = require("striptags");
 var fs = require("fs");
 
-//上傳圖片
-var multer = require("multer");
-var upload = multer({
-  dest: "public/upload",
-  fileFilter(req, file, cb) {
-    // 只接受三種圖片格式
-    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-      cb(new Error("Please upload an image"));
-    }
-    cb(null, true);
+const storage = new Storage({
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  keyFilename: {
+    type: "service_account",
+    project_id: process.env.FIREBASE_PROJECT_ID,
+    private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+    private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+    client_email: process.env.FIREBASE_CLIENT_EMAIL,
+    client_id: process.env.FIREBASE_CLIENT_ID,
+    auth_uri: process.env.FIREBASE_AUTH_URI,
+    token_uri: process.env.FIREBASE_TOKEN_URI,
+    auth_provider_x509_cert_url:
+      process.env.FIREBASE_AUTH_PROVIDER_X509_CERT_URL,
+    client_x509_cert_url: process.env.FIREBASE_CLIENT_X509_CERT_URL,
   },
+}); //2
+
+//上傳圖片
+var Multer = require("multer");
+var upload = Multer({
+  //dest: "public/upload",
+  storage: Multer.memoryStorage(), //3
+  limits: {
+    //4
+    fileSize: 5 * 1024 * 1024, // no larger than 5mb, you can change as needed.
+  },
+  // fileFilter(req, file, cb) {
+  //   // 只接受三種圖片格式
+  //   if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+  //     cb(new Error("Please upload an image"));
+  //   }
+  //   cb(null, true);
+  // },
 });
+const bucket = storage.bucket(process.env.FIREBASE_STORAGE_BUCKET); //5
+console.log(bucket)
 
 const categoriesRef = firebaseAdminDb.ref("/categories/");
 const articlesRef = firebaseAdminDb.ref("/articles/");
@@ -26,15 +53,33 @@ const articlesRef = firebaseAdminDb.ref("/articles/");
 
 //上傳照片
 router.post("/uploadimg", upload.single("photo"), function (req, res, next) {
-  var file = req.file;
-  //const blob = firebaseStorage.file(file.originalname);
-  //console.log(blob)
-  let newPath = `public/upload/${file.originalname}`;
-  fs.rename(file.path, newPath, () => {
-    console.log(file.path);
-    console.log(newPath);
-    res.redirect(`/upload/${file.originalname}`);
+  console.log(req.file);
+  if (!req.file) {
+    res.status(400).send("No file uploaded.");
+    return;
+  }
+  const blob = bucket.file(req.file.originalname);
+  const blobStream = blob.createWriteStream();
+  blobStream.on("error", (err) => {
+    next(err);
   });
+
+  blobStream.on("finish", () => {
+    // The public URL can be used to directly access the file via HTTP.
+    const publicUrl = format(
+      `https://storage.googleapis.com/${bucket.name}/${blob.name}`
+    );
+    res.status(200).send(publicUrl);
+  });
+
+  blobStream.end(req.file.buffer);
+
+  // let newPath = `public/upload/${file.originalname}`;
+  // fs.rename(req.file.path, newPath, () => {
+  //   console.log(req.file.path);
+  //   console.log(req.newPath);
+  //   res.redirect(`/upload/${file.originalname}`);
+  // });
 });
 
 //前台預覽文章
