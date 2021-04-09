@@ -29,6 +29,19 @@ article={} } %>
     <script>
       // CKEDITOR.replace("content");
       ClassicEditor.create(document.querySelector("#editor"), {
+        simpleUpload: {
+          // The URL that the images are uploaded to.
+          uploadUrl: "/public/upload",
+
+          // Enable the XMLHttpRequest.withCredentials property.
+          withCredentials: true,
+
+          // Headers sent along with the XMLHttpRequest to the upload server.
+          headers: {
+            "X-CSRF-TOKEN": "CSRF-Token",
+            Authorization: "Bearer <JSON Web Token>",
+          },
+        },
       })
         .then((editor) => {
           console.log(editor);
@@ -36,7 +49,6 @@ article={} } %>
         .catch((error) => {
           console.error(error);
         });
-      
     </script>
   </div>
   <div class="col-md-3">
