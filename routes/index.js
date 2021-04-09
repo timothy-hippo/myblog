@@ -1,31 +1,12 @@
 var express = require("express");
 var router = express.Router();
 var firebaseAdminDb = require("../connections/firebase_admin");
+const bucket = require("../connections/firebase_storage");
 var convertPagination = require("../modules/convertPagination"); //載入分頁模組
-require("dotenv").config();
-
-const { Storage } = require("@google-cloud/storage"); //載入google-cloud服務
 
 var moment = require("moment");
 var striptags = require("striptags");
-var fs = require("fs");
 
-const storage = new Storage({
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  keyFilename: {
-    type: "service_account",
-    project_id: process.env.FIREBASE_PROJECT_ID,
-    private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
-    private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
-    client_email: process.env.FIREBASE_CLIENT_EMAIL,
-    client_id: process.env.FIREBASE_CLIENT_ID,
-    auth_uri: process.env.FIREBASE_AUTH_URI,
-    token_uri: process.env.FIREBASE_TOKEN_URI,
-    auth_provider_x509_cert_url:
-      process.env.FIREBASE_AUTH_PROVIDER_X509_CERT_URL,
-    client_x509_cert_url: process.env.FIREBASE_CLIENT_X509_CERT_URL,
-  },
-}); //2
 
 //上傳圖片
 var Multer = require("multer");
@@ -36,50 +17,59 @@ var upload = Multer({
     //4
     fileSize: 5 * 1024 * 1024, // no larger than 5mb, you can change as needed.
   },
-  // fileFilter(req, file, cb) {
-  //   // 只接受三種圖片格式
-  //   if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-  //     cb(new Error("Please upload an image"));
-  //   }
-  //   cb(null, true);
-  // },
+  fileFilter(req, file, cb) {
+    // 只接受三種圖片格式
+    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+      cb(new Error("Please upload an image"));
+    }
+    cb(null, true);
+  },
 });
-const bucket = storage.bucket(process.env.FIREBASE_STORAGE_BUCKET); //5
-console.log(bucket)
+//console.log(bucket);
 
 const categoriesRef = firebaseAdminDb.ref("/categories/");
 const articlesRef = firebaseAdminDb.ref("/articles/");
 //const userRef = firebaseAdminDb.ref("/user/");
 
 //上傳照片
-router.post("/uploadimg", upload.single("photo"), function (req, res, next) {
-  console.log(req.file);
-  if (!req.file) {
-    res.status(400).send("No file uploaded.");
+router.post("/uploadimg", upload.single("photo"), async (req, res, next)=> {
+  try {
+    if (!req.file) {
+      res.status(400).send("Error, could not upload file");
+      return;
+    }
+
+    // Create new blob in the bucket referencing the file
+    const blob = bucket.file(req.file.originalname);
+
+    // Create writable stream and specifying file mimetype
+    const blobWriter = blob.createWriteStream({
+      metadata: {
+        contentType: req.file.mimetype,
+      },
+    });
+
+    blobWriter.on("error", (err) => next(err));
+
+    blobWriter.on("finish", () => {
+      // Assembling public URL for accessing the file via HTTP
+      const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${
+        bucket.name
+      }/o/${encodeURI(blob.name)}?alt=media`;
+
+      // Return the file name and its public URL
+      res
+        .status(200)
+        .redirect("/")
+        //.send({ fileName: req.file.originalname, fileLocation: publicUrl });
+    });
+
+    // When there is no more data to be consumed from the stream
+    blobWriter.end(req.file.buffer);
+  } catch (error) {
+    res.status(400).send(`Error, could not upload file: ${error}`);
     return;
   }
-  const blob = bucket.file(req.file.originalname);
-  const blobStream = blob.createWriteStream();
-  blobStream.on("error", (err) => {
-    next(err);
-  });
-
-  blobStream.on("finish", () => {
-    // The public URL can be used to directly access the file via HTTP.
-    const publicUrl = format(
-      `https://storage.googleapis.com/${bucket.name}/${blob.name}`
-    );
-    res.status(200).send(publicUrl);
-  });
-
-  blobStream.end(req.file.buffer);
-
-  // let newPath = `public/upload/${file.originalname}`;
-  // fs.rename(req.file.path, newPath, () => {
-  //   console.log(req.file.path);
-  //   console.log(req.newPath);
-  //   res.redirect(`/upload/${file.originalname}`);
-  // });
 });
 
 //前台預覽文章

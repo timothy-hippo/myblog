@@ -29,7 +29,6 @@ article={} } %>
     <script>
       // CKEDITOR.replace("content");
       ClassicEditor.create(document.querySelector("#editor"), {
-        ckfinder: { uploadUrl: "/api/uploader/ckeditor5" },
       })
         .then((editor) => {
           console.log(editor);
